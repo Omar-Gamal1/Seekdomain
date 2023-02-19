@@ -41,7 +41,7 @@ seekdomain -h
 ```
 seekdomain -d oppo.com -m f
 ```
-> ```-m``` is the scan mode fast ```f``` or deep ```d``` \
+```-m``` is the scan mode fast ```f``` or deep ```d``` \
 the diffrence is with the deep one will use permutation, bigger bruteforce list and test in the TLS for more ports
 
 
