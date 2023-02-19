@@ -22,7 +22,7 @@ active subdomain Enumeration :
 * bruteforce 
 * permutation 
 * scraping 
-* NOERROR 
+* NOERROR  (more info [Here](https://www.securesystems.de/blog/enhancing-subdomain-enumeration-ents-and-noerror))
 * TLSX 
 
 ## install
