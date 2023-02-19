@@ -29,8 +29,8 @@ active subdomain Enumeration :
 > the tools will install in the home directory (Tools) \
 and the script will go to usr local binaries
 ```
-git clone 
-cd 
+git clone https://github.com/akaPABL0/Seekdomain.git
+cd Seekdomain
 chmod +x setup.sh
 seekdomain -h
 ```
