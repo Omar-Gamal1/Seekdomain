@@ -41,7 +41,7 @@ seekdomain -h
 ```
 seekdomain -d oppo.com -m f
 ```
-> -m is the scan mode fast [f] or deep [d] \
+> ```-m``` is the scan mode fast ```f``` or deep ```d``` \
 the diffrence is with the deep one will use permutation, bigger bruteforce list and test in the TLS for more ports
 
 
@@ -51,4 +51,4 @@ the diffrence is with the deep one will use permutation, bigger bruteforce list 
 will be all subdomains the tool found, alive subdomains two files    \
 one with the default ports [80,443] and the other with common web ports like [8080,8443]   \
 the output of gospider ready to use for another step \
-the output from each tools in the dir  tools_output if you want to delete it add the -r argument.
+the output from each tools in the dir  tools_output if you want to delete it add the ```-r``` argument.
