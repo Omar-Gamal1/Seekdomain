@@ -1,0 +1,206 @@
+#!/bin/bash
+
+
+NOCOLOR='\033[0m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+ORANGE='\033[0;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+LIGHTGRAY='\033[0;37m'
+DARKGRAY='\033[1;30m'
+LIGHTRED='\033[1;31m'
+LIGHTGREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+LIGHTBLUE='\033[1;34m'
+LIGHTPURPLE='\033[1;35m'
+LIGHTCYAN='\033[1;36m'
+WHITE='\033[1;37m'
+
+echo -e "\n"
+echo -e "                     ${YELLOW} ██████╗███████╗███████╗██╗░░██╗██████╗░░█████╗░███╗░░░███╗░█████╗░██╗███╗░░██╗ ${NOCOLOR}"
+echo -e "                     ${YELLOW}██╔════╝██╔════╝██╔════╝██║░██╔╝██╔══██╗██╔══██╗████╗░████║██╔══██╗██║████╗░██║ ${NOCOLOR}"
+echo -e "                     ${YELLOW}╚█████╗░█████╗░░█████╗░░█████═╝░██║░░██║██║░░██║██╔████╔██║███████║██║██╔██╗██║ ${NOCOLOR}"
+echo -e "                     ${YELLOW}░╚═══██╗██╔══╝░░██╔══╝░░██╔═██╗░██║░░██║██║░░██║██║╚██╔╝██║██╔══██║██║██║╚████║ ${NOCOLOR}"
+echo -e "                     ${YELLOW}██████╔╝███████╗███████╗██║░╚██╗██████╔╝╚█████╔╝██║░╚═╝░██║██║░░██║██║██║░╚███║ ${NOCOLOR}"
+echo -e "                     ${YELLOW}╚═════╝░╚══════╝╚══════╝╚═╝░░╚═╝╚═════╝░░╚════╝░╚═╝░░░░░╚═╝╚═╝░░╚═╝╚═╝╚═╝░░╚══╝ ${NOCO} ${CYAN}𝙈𝙖𝙙𝙚 𝙥𝙮 𝙋𝘼𝘽𝙇𝙊 ${NOCOLOR}"
+
+# Initialize variables
+domain=""
+mode=""
+r=""
+
+# Define usage function
+function usage {
+  echo -e "\nUsage: $0 -d domain -m mode\n"
+  echo "  -d    The domain name"
+  echo "  -m    The mode 
+     'f : fast '  102k dns wordlist , without Permutation default ports in tslx
+     'd : deep '   2M  dns wordlist , with Permutation and search for more ports in tslx "
+  echo "  -r    Remove the tools output, just get the final output " 
+  echo "  -h    Display this help message"
+  exit 1
+}
+
+# Parse command line options
+while getopts "d:m:rh" opt; do
+  case $opt in
+    d)
+      # Check if the argument is a valid domain name
+      if ! echo "$OPTARG" | grep -qE '^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.([a-zA-Z]{2,})$'; then
+        echo "Error: $OPTARG is not a valid domain name"
+        exit 1
+      fi
+
+      domain=$OPTARG
+      ;;
+    m)
+      if [ "$OPTARG" == "f" ]; then
+        mode="f"
+        dns_wordlist=/home/`whoami`/Tools/brute_subs_102k.txt
+      elif [ "$OPTARG" == "d" ]; then
+        mode="d"
+        dns_wordlist=/home/`whoami`/Tools/brute_subs_2M_all.txt
+    Permutationwordlist=/home/`whoami`/Tools/permutations_list.txt
+      else
+        echo "Error: mode must be either 'f' or 'd' 
+       -h for Help "
+        exit 1
+      fi
+      ;;
+    h)
+      usage
+      ;;
+    r)
+        r="true"
+      ;;
+    \?)
+      usage
+      ;;
+    :)
+      echo "Error: option requires an argument"
+      usage
+      ;;
+  esac
+done
+
+# Check if both arguments were passed
+if [ -z "$domain" ] || [ -z "$mode" ]; then
+  usage
+fi
+shift "$(($OPTIND -1))"
+
+
+
+
+resolvers=~/Tools/resolvers.txt
+resolvers_trusted=~/Tools/resolvers_trusted.txt
+COMMON_PORTS="21,22,25,80,110,135,143,261,271,324,443,448,465,563,614,631,636,664,684,695,832,853,854,990,993,989,992,994,995,1129,1131,1184,2083,2087,2089,2096,2221,2252,2376,2381,2478,2479,2482,2484,2679,2762,3077,3078,3183,3191,3220,3269,3306,3410,3424,3471,3496,3509,3529,3539,3535,3660,36611,3713,3747,3766,3864,3885,3995,3896,4031,4036,4062,4064,4081,4083,4116,4335,4336,4536,4590,4740,4843,4849,5443,5007,5061,5321,5349,5671,5783,5868,5986,5989,5990,6209,6251,6443,6513,6514,6619,6697,6771,7202,7443,7673,7674,7677,7775,8243,8443,8991,8989,9089,9295,9318,9443,9444,9614,9802,10161,10162,11751,12013,12109,14143,15002,16995,41230,16993,20003"
+
+mkdir -p "$domain/Subdomains/tools_output"
+cd $domain/Subdomains/tools_output
+echo -e "\n\n                          ${ORANGE}`pwd`${NOCOLOR}       \n\n "
+
+# Passive Enum
+sleep 1 
+echo -e "\n\n${CYAN}                           starting PassiveEnum ${NOCOLOR}\n\n"
+sleep 1 
+echo -e "${RED}                            starting Amass${NOCOLOR}\n\n"
+amass enum -passive -noalts -d $domain | anew amass_subdomains.txt
+sleep 1 
+echo -e "\n\n${RED}                            starting SubFinder${NOCOLOR}\n\n"
+subfinder -all -d $domain -recursive -silent 2>/dev/null | anew subfinder_subdomains.txt
+
+sleep 1 
+echo -e "\n\n${PURPLE}                          starting Assetfinder${NOCOLOR}\n\n"
+assetfinder --subs-only $domain  | anew asset_subdomains.txt
+
+sleep 1 
+echo -e "\n\n${ORANGE}                         starting findomain${NOCOLOR}\n\n"
+findomain -t $domain -q 2>/dev/null | anew findomain_subdomains.txt
+
+sleep 1 
+echo -e "\n\n${DARKGRAY}                       starting github-subdomains${NOCOLOR}\n\n"
+github-subdomains -d $domain -t $github_token -q -raw -o github_subdomains.txt
+
+#CERT
+sleep 1 
+echo -e "\n\n${YELLOW}                          starting Crtsh${NOCOLOR}\n\n"
+python3 /home/`whoami`/Tools/ctfr/ctfr.py -d $domain  -o crtsh_subdomains.txt
+
+cat crtsh_subdomains.txt subfinder_subdomains.txt amass_subdomains.txt asset_subdomains.txt findomain_subdomains.txt github_subdomains.txt | anew passive_subdomains.txt
+
+
+#Active sub Enum
+sleep 1 
+echo -e "\n\n${CYAN}                            starting Active SubEnum${NOCOLOR}\n\n"
+puredns resolve passive_subdomains.txt -w resolved_subdomains.txt -r $resolvers -l 5000 --rate-limit-trusted 400 --wildcard-tests 30  --wildcard-batch 1500000
+
+sleep 1 
+echo -e "\n\n${BLUE}                            starting tlsx${NOCOLOR}\n\n"
+if [ $mode == "f" ]; then
+  cat resolved_subdomains.txt | tlsx -san -cn -silent -ro -c 1000 | grep "\.$domain$\|^$domain$" | anew tslx_subdomains.txt
+elif [ $mode == "d" ]; then
+  cat resolved_subdomains.txt | tlsx -san -cn -silent -ro -c 1000 -p $COMMON_PORTS | grep "\.$domain$\|^$domain$" | anew tslx_subdomains.txt
+fi
+
+#sub_noerror
+sleep 1 
+echo -e "\n\n${CYAN}                            starting Sub_NoError${NOCOLOR}\n\n"
+dnsx -d $domain -r $resolvers -rcode noerror -w $dns_wordlist -o dnsx_subs.txt 
+cat dnsx_subs.txt  | cut -d' ' -f1  | grep "\.$domain$\|^$domain$" | anew dnsx_subdomains.txt && rm -rf dnsx_subs.txt
+
+#Brute Force
+sleep 1 
+echo -e "\n\n${RED}                            starting BruteForce ${NOCOLOR}\n\n"
+puredns bruteforce $dns_wordlist $domain -w bruted_subs.txt -r $resolvers --resolvers-trusted $resolvers_trusted -l 5000 --rate-limit-trusted 400 --wildcard-tests 30  --wildcard-batch 1500000
+
+
+
+# #scraping subs
+cat resolved_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt | anew | httpx -random-agent -retries 2 -no-color -o probed_Default_ports.txt
+sleep 1 
+echo -e "\n\n${BLUE}                            starting Scrapping${NOCOLOR}\n\n"
+gospider -S probed_Default_ports.txt --js -t 50 -d 3 --sitemap --robots -w -r | anew gospider.txt
+cat gospider.txt | grep -aEo 'https?://[^ ]+' | sed 's/]$//' | unfurl -u domains  | grep ".$domain$"  | anew scraped_subs.txt 
+
+#resolve scraped subdomains
+echo -e "\n\n${BLUE}                            resolving${NOCOLOR}\n\n"
+puredns resolve scraped_subs.txt -w scrap_subs_resolved.txt -r $resolvers 
+
+
+if [ $mode == "f" ]; then
+  echo -e "\n\n${CYAN}                            starting Probing${NOCOLOR}\n\n"
+  cat scrap_subs_resolved.txt | httpx -random-agent -retries 2 -no-color | anew probed_Default_ports.txt #Alive subdomains
+  cat resolved_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt scrap_subs_resolved.txt | anew final_subdomains.txt
+elif [ $mode == "d" ]; then
+  #Permutation
+  cat passive_subdomains.txt resolved_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt scrap_subs_resolved.txt | anew Known_subdomains.txt
+  sleep 1 
+  echo -e "\n\n${YELLOW}                            starting Subdomains_Permutation${NOCOLOR}\n\n"
+  sleep 1 
+  #start tool
+  echo -e "\n\n${RED}                               starting gotator${NOCOLOR}\n\n"
+  gotator -sub Known_subdomains.txt -perm $Permutationwordlist -depth 1 -numbers 10 -mindup -adv -md -silent | anew gotator_subdomains.txt
+  #resolving output
+  puredns resolve gotator_subdomains.txt -w resolved_gotator_subdomains.txt -r $resolvers_trusted -l 5000 --rate-limit-trusted 400 --wildcard-tests 30  --wildcard-batch 1500000
+  cat resolved_gotator_subdomains.txt | anew -q final_subdomains.txt
+
+  #probing
+  echo -e "\n\n${CYAN}                            starting Probing${NOCOLOR}\n\n"
+  cat resolved_gotator_subdomains.txt | httpx -random-agent -retries 2 -no-color | anew probed_Default_ports.txt #Alive subdomains
+  rm gotator_subdomains.txt Known_subdomains.txt 
+fi
+
+#Probing on common ports
+echo -e "\n\n${CYAN}                            starting Probing on common ports${NOCOLOR}\n\n"
+sudo unimap --fast-scan -f final_subdomains.txt --ports $COMMON_PORTS -q --url-output > unimap_commonweb.txt
+cat unimap_commonweb.txt | httpx -random-agent -status-code -silent -retries 2 -no-color | cut -d ' ' -f1 | anew probed_common_ports.txt
+
+mv probed_Default_ports.txt probed_common_ports.txt final_subdomains.txt unimap_commonweb.txt gospider.txt ../ && cd ../
+
+
+if [ ! -z "$r" ]; then
+  sudo rm -rf tools_output
+fi
