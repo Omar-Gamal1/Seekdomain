@@ -16,9 +16,10 @@
 * htttpx 
 
 ## Techniques 
+#### Passive subdomain Enumeration :
 * passive sources 
-* CRTSH 
-active subdomain Enumeration :  
+* CRTSH
+#### Active subdomain Enumeration :  
 * bruteforce 
 * permutation 
 * scraping 
