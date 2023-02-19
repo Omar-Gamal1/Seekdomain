@@ -1,5 +1,11 @@
 #!/bin/bash
 
+mkdir /home/`whoami`/Tools
+mv permutations_list.txt /home/`whoami`/Tools
+mv brute_subs_102k.txt /home/`whoami`/Tools
+mv resolvers.txt /home/`whoami`/Tools
+mv resolvers_trusted.txt /home/`whoami`/Tools
+
 #install go tools
 go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 go install github.com/tomnomnom/assetfinder@latest
@@ -15,8 +21,9 @@ GO111MODULE=on go install github.com/jaeles-project/gospider@latest
 
 
 
-mkdir /home/`whoami`/Tools
+
 cd /home/`whoami`/Tools
+
 
 git clone https://github.com/UnaPibaGeek/ctfr.git
 cd ctfr
