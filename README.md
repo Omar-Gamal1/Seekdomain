@@ -28,11 +28,12 @@
 
 ## install
 > the tools will install in the home directory (Tools) \
-and the script will go to usr local binaries
+and the script will go to usr local binaries needing root privilege
 ```
 git clone https://github.com/akaPABL0/Seekdomain.git
 cd Seekdomain
 chmod +x setup.sh
+./setup.sh
 seekdomain -h
 ```
 
