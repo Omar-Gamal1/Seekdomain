@@ -134,11 +134,11 @@ cat crtsh_subdomains.txt subfinder_subdomains.txt amass_subdomains.txt asset_sub
 
 #Active sub Enum
 sleep 1 
-echo -e "\n\n${CYAN}                            starting Active SubEnum${NOCOLOR}\n\n"
+echo -e "\n\n${RED}                                          starting Active SubEnum${NOCOLOR}\n\n"
 puredns resolve passive_subdomains.txt -w resolved_subdomains.txt -r $resolvers -l 5000 --rate-limit-trusted 400 --wildcard-tests 30  --wildcard-batch 1500000
 
 sleep 1 
-echo -e "\n\n${BLUE}                            starting tlsx${NOCOLOR}\n\n"
+echo -e "\n\n${BLUE}                                                 starting tlsx${NOCOLOR}\n\n"
 if [ $mode == "f" ]; then
   cat resolved_subdomains.txt | tlsx -san -cn -silent -ro -c 1000 | grep "\.$domain$\|^$domain$" | anew tslx_subdomains.txt
 elif [ $mode == "d" ]; then
@@ -147,13 +147,14 @@ fi
 
 #sub_noerror
 sleep 1 
-echo -e "\n\n${CYAN}                            starting Sub_NoError${NOCOLOR}\n\n"
+echo -e "\n\n${CYAN}                                              starting Sub_NoError${NOCOLOR}\n\n"
 dnsx -d $domain -r $resolvers -rcode noerror -w $dns_wordlist -o dnsx_subs.txt 
 cat dnsx_subs.txt  | cut -d' ' -f1  | grep "\.$domain$\|^$domain$" | anew dnsx_subdomains.txt && rm -rf dnsx_subs.txt
 
 #Brute Force
 sleep 1 
-echo -e "\n\n${RED}                            starting BruteForce ${NOCOLOR}\n\n"
+echo -e "\n\n${RED}                                                starting BruteForce ${NOCOLOR}\n\n"
+echo -e "\n\n${RED}  be carful this step may case a lot of trafic on youe network so don't be worried let it finish and every thing will return to normal  ${NOCOLOR}\n\n"
 puredns bruteforce $dns_wordlist $domain -w bruted_subs.txt -r $resolvers --resolvers-trusted $resolvers_trusted -l 5000 --rate-limit-trusted 400 --wildcard-tests 30  --wildcard-batch 1500000
 
 
