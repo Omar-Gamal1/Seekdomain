@@ -156,6 +156,9 @@ if [[ $(echo "${RANDOM}thistestfornotexist${RANDOM}.$domain" | dnsx -r $resolver
         echo -e "\n\n${CYAN}                            starting Sub_NoError${NOCOLOR}\n\n"
         dnsx -d $domain -r $resolvers -silent -rcode noerror -w $dns_wordlist -o dnsx_subs.txt 
       fi
+else 
+			printf "\n${yellow} Detected DNSSEC black lies, skipping this technique ${reset}\n" 
+fi
 
 cat dnsx_subs.txt  | cut -d' ' -f1  | grep "\.$domain$\|^$domain$" | anew dnsx_subdomains.txt && rm -rf dnsx_subs.txt
 
