@@ -186,7 +186,7 @@ elif [ $mode == "d" ]; then
   gotator -sub Known_subdomains.txt -perm $Permutationwordlist -depth 1 -numbers 10 -mindup -adv -md -silent | anew gotator_subdomains.txt
   #resolving output
   puredns resolve gotator_subdomains.txt -w resolved_gotator_subdomains.txt -r $resolvers_trusted -l 5000 --rate-limit-trusted 400 --wildcard-tests 30  --wildcard-batch 1500000
-  cat resolved_gotator_subdomains.txt | anew -q final_subdomains.txt
+  cat resolved_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt scrap_subs_resolved.txt resolved_gotator_subdomains.txt | anew -q final_subdomains.txt
 
   #probing
   echo -e "\n\n${CYAN}                            starting Probing${NOCOLOR}\n\n"
