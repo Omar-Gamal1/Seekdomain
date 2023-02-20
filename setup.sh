@@ -52,11 +52,6 @@ findomain --help
 wget -O brute_subs_2M_all.txt https://gist.githubusercontent.com/six2dez/a307a04a222fab5a57466c51e1569acf/raw 
 
 
-wget -N -c https://github.com/Edu4rdSHL/unimap/releases/download/0.5.1/unimap-linux
-sudo mv unimap-linux /usr/local/bin/unimap
-chmod 755 /usr/local/bin/unimap
-strip -s /usr/local/bin/unimap
-
 #move to user binares
 chmod +x /usr/local/bin/seekdomain
 sudo mv seekdomain /usr/local/bin/
