@@ -57,4 +57,4 @@ chmod 755 /usr/local/bin/unimap
 strip -s /usr/local/bin/unimap
 
 sudo mv seekdomain /usr/local/bin/ 
-chmod +x /usr/local/bin/seekdomain
+sudo chmod +x /usr/local/bin/seekdomain
