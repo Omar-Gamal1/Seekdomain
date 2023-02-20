@@ -41,14 +41,14 @@ function usage {
      'f : fast '  102k dns wordlist , without Permutation default ports in tslx
      'd : deep '   2M  dns wordlist ,search for more ports in tslx and more tools in passive recursion " | lolcat
   echo "  -s    Starts subdomain scrapping " | lolcat
+  echo "  -p    Enables Permutation        " | lolcat 
   echo "  -r    Remove the tools output, just get the final output " | lolcat
   echo "  -h    Display this help message"  | lolcat
-  echo "  -p    Enables Permutation   -p permutation_wordlist.txt     " | lolcat 
   exit 1
 }
 
 # Parse command line options
-while getopts "d:m:rh" opt; do
+while getopts "d:m:rsp:h" opt; do
   case $opt in
     d)
       # Check if the argument is a valid domain name
@@ -79,12 +79,11 @@ while getopts "d:m:rh" opt; do
         r="true"
       ;;
     p)
-        p=$OPTARG
+        p=/home/`whoami`/Tools/permutations_list.txt
       ;;
     s)
         s="true"
       ;;
-
     \?)
       usage
       ;;
