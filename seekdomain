@@ -30,6 +30,7 @@ echo -e "                     ${YELLOW}╚═════╝░╚════�
 domain=""
 mode=""
 r=""
+s=""
 
 # Define usage function
 function usage {
@@ -38,6 +39,7 @@ function usage {
   echo "  -m    The mode 
      'f : fast '  102k dns wordlist , without Permutation default ports in tslx
      'd : deep '   2M  dns wordlist , with Permutation and search for more ports in tslx "
+  echo "  -s    Starts subdomain scrapping "
   echo "  -r    Remove the tools output, just get the final output " 
   echo "  -h    Display this help message"
   exit 1
@@ -164,13 +166,14 @@ echo -e "\n\n${RED}  be carful this step may case a lot of trafic on youe networ
 puredns bruteforce $dns_wordlist $domain -w bruted_subs.txt -r $resolvers --resolvers-trusted $resolvers_trusted -l 5000 --rate-limit-trusted 400 --wildcard-tests 30  --wildcard-batch 1500000
 
 
-
-# #scraping subs
+if [ ! -z "$s" ]; then
+#scraping subs
 cat resolved_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt | anew | httpx -random-agent -retries 2 -no-color -o probed_Default_ports.txt
 sleep 1 
 echo -e "\n\n${BLUE}                            starting Scrapping${NOCOLOR}\n\n"
 gospider -S probed_Default_ports.txt --js -t 50 -d 3 --sitemap --robots -w -r | anew gospider.txt
 cat gospider.txt | grep -aEo 'https?://[^ ]+' | sed 's/]$//' | unfurl -u domains  | grep ".$domain$"  | anew scraped_subs.txt 
+fi
 
 #resolve scraped subdomains
 echo -e "\n\n${BLUE}                            resolving${NOCOLOR}\n\n"
