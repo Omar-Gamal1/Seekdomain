@@ -12,13 +12,13 @@
 * tlsx 
 * dnsx 
 * puredns 
-* unimap   
 * htttpx 
 
 ## Techniques 
 #### Passive subdomain Enumeration :
 * passive sources 
 * CRTSH
+* recursion
 #### Active subdomain Enumeration :  
 * bruteforce 
 * permutation 
@@ -49,6 +49,6 @@ seekdomain -d oppo.com -m f
 ### Output 
 ![image](https://user-images.githubusercontent.com/101532943/219975655-50944f29-de99-40bd-afee-704c448bcdea.png)
 will be all subdomains the tool found, alive subdomains two files    \
-one with the default ports [80,443] and the other with common web ports like [8080,8443]   \
+one with the default ports [80,443] \
 the output of gospider ready to use for another step \
 the output from each tools in the dir  tools_output if you want to delete it add the ```-r``` argument.
