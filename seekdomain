@@ -138,6 +138,8 @@ cat crtsh_subdomains.txt subfinder_subdomains.txt amass_subdomains.txt asset_sub
 sleep 1 
 echo -e "\n\n${RED}                                          starting Active SubEnum${NOCOLOR}\n\n"
 puredns resolve passive_subdomains.txt -w resolved_subdomains.txt -r $resolvers -l 5000 --rate-limit-trusted 400 --wildcard-tests 30  --wildcard-batch 1500000
+
+
 #tls enumeration 
 sleep 1 
 echo -e "\n\n${BLUE}                                                 starting tlsx${NOCOLOR}\n\n"
@@ -146,6 +148,7 @@ if [ $mode == "f" ]; then
 elif [ $mode == "d" ]; then
   cat resolved_subdomains.txt | tlsx -san -cn -silent -ro -c 1000 -p $COMMON_PORTS | grep "\.$domain$\|^$domain$" | anew tslx_subdomains.txt
 fi
+
 
 #sub_noerror
 if [[ $(echo "${RANDOM}thistestfornotexist${RANDOM}.$domain" | dnsx -r $resolvers -rcode noerror,nxdomain -retry 3 -silent | cut -d' ' -f2) == "[NXDOMAIN]" ]]; then 
