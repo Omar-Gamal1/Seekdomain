@@ -19,12 +19,13 @@ go install github.com/tomnomnom/anew@latest
 go install github.com/tomnomnom/unfurl@latest
 GO111MODULE=on go install github.com/jaeles-project/gospider@latest
 
-
+#apt install
+sudo apt install lolcat
 
 
 cd /home/`whoami`/Tools
 
-
+#github clones
 git clone https://github.com/UnaPibaGeek/ctfr.git
 cd ctfr
 pip3 install -r requirements.txt
@@ -48,7 +49,7 @@ sudo mv findomain /usr/bin/findomain
 rm -rf findomain-linux-i386.zip
 findomain --help
 
-wget -O brute_subs_2M_all.txt 102k_Brute_subs.txt https://gist.githubusercontent.com/six2dez/a307a04a222fab5a57466c51e1569acf/raw 
+wget -O brute_subs_2M_all.txt https://gist.githubusercontent.com/six2dez/a307a04a222fab5a57466c51e1569acf/raw 
 
 
 wget -N -c https://github.com/Edu4rdSHL/unimap/releases/download/0.5.1/unimap-linux
@@ -56,5 +57,7 @@ sudo mv unimap-linux /usr/local/bin/unimap
 chmod 755 /usr/local/bin/unimap
 strip -s /usr/local/bin/unimap
 
-sudo mv seekdomain /usr/local/bin/ 
-sudo chmod +x /usr/local/bin/seekdomain
+#move to user binares
+chmod +x /usr/local/bin/seekdomain
+sudo mv seekdomain /usr/local/bin/
+
