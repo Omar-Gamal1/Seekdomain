@@ -19,12 +19,12 @@ LIGHTCYAN='\033[1;36m'
 WHITE='\033[1;37m'
 
 echo -e "\n"
-echo -e "                     ${YELLOW} ██████╗███████╗███████╗██╗░░██╗██████╗░░█████╗░███╗░░░███╗░█████╗░██╗███╗░░██╗ ${NOCOLOR}"
-echo -e "                     ${YELLOW}██╔════╝██╔════╝██╔════╝██║░██╔╝██╔══██╗██╔══██╗████╗░████║██╔══██╗██║████╗░██║ ${NOCOLOR}"
-echo -e "                     ${YELLOW}╚█████╗░█████╗░░█████╗░░█████═╝░██║░░██║██║░░██║██╔████╔██║███████║██║██╔██╗██║ ${NOCOLOR}"
-echo -e "                     ${YELLOW}░╚═══██╗██╔══╝░░██╔══╝░░██╔═██╗░██║░░██║██║░░██║██║╚██╔╝██║██╔══██║██║██║╚████║ ${NOCOLOR}"
-echo -e "                     ${YELLOW}██████╔╝███████╗███████╗██║░╚██╗██████╔╝╚█████╔╝██║░╚═╝░██║██║░░██║██║██║░╚███║ ${NOCOLOR}"
-echo -e "                     ${YELLOW}╚═════╝░╚══════╝╚══════╝╚═╝░░╚═╝╚═════╝░░╚════╝░╚═╝░░░░░╚═╝╚═╝░░╚═╝╚═╝╚═╝░░╚══╝ ${NOCO} ${CYAN}𝙈𝙖𝙙𝙚 𝙥𝙮 𝙋𝘼𝘽𝙇𝙊 ${NOCOLOR}"
+echo -e "                     ${YELLOW} ██████╗███████╗███████╗██╗░░██╗██████╗░░█████╗░███╗░░░███╗░█████╗░██╗███╗░░██╗ ${NOCOLOR}" | lolcat
+echo -e "                     ${YELLOW}██╔════╝██╔════╝██╔════╝██║░██╔╝██╔══██╗██╔══██╗████╗░████║██╔══██╗██║████╗░██║ ${NOCOLOR}" | lolcat
+echo -e "                     ${YELLOW}╚█████╗░█████╗░░█████╗░░█████═╝░██║░░██║██║░░██║██╔████╔██║███████║██║██╔██╗██║ ${NOCOLOR}" | lolcat
+echo -e "                     ${YELLOW}░╚═══██╗██╔══╝░░██╔══╝░░██╔═██╗░██║░░██║██║░░██║██║╚██╔╝██║██╔══██║██║██║╚████║ ${NOCOLOR}" | lolcat
+echo -e "                     ${YELLOW}██████╔╝███████╗███████╗██║░╚██╗██████╔╝╚█████╔╝██║░╚═╝░██║██║░░██║██║██║░╚███║ ${NOCOLOR}" | lolcat
+echo -e "                     ${YELLOW}╚═════╝░╚══════╝╚══════╝╚═╝░░╚═╝╚═════╝░░╚════╝░╚═╝░░░░░╚═╝╚═╝░░╚═╝╚═╝╚═╝░░╚══╝ ${NOCO} ${CYAN}𝙈𝙖𝙙𝙚 𝙥𝙮 𝙋𝘼𝘽𝙇𝙊 ${NOCOLOR}" | lolcat
 
 # Initialize variables
 domain=""
@@ -34,14 +34,14 @@ s=""
 
 # Define usage function
 function usage {
-  echo -e "\nUsage: $0 -d domain -m mode\n"
-  echo "  -d    The domain name"
+  echo -e "\nUsage: $0 -d domain -m mode\n" |  lolcat
+  echo "  -d    The domain name" | lolcat
   echo "  -m    The mode 
      'f : fast '  102k dns wordlist , without Permutation default ports in tslx
-     'd : deep '   2M  dns wordlist , with Permutation and search for more ports in tslx "
-  echo "  -s    Starts subdomain scrapping "
-  echo "  -r    Remove the tools output, just get the final output " 
-  echo "  -h    Display this help message"
+     'd : deep '   2M  dns wordlist , with Permutation and search for more ports in tslx and more tools in passive recursion " | lolcat
+  echo "  -s    Starts subdomain scrapping " | lolcat
+  echo "  -r    Remove the tools output, just get the final output " | lolcat
+  echo "  -h    Display this help message"  | lolcat
   exit 1
 }
 
@@ -134,19 +134,56 @@ python3 /home/`whoami`/Tools/ctfr/ctfr.py -d $domain  -o crtsh_subdomains.txt
 cat crtsh_subdomains.txt subfinder_subdomains.txt amass_subdomains.txt asset_subdomains.txt findomain_subdomains.txt github_subdomains.txt | anew passive_subdomains.txt
 
 
+#recursive Enumeration
+if [ $mode == "f" ]; then
+
+  for sub in $(cat passive_subdomains.txt | grep -v '*' | unfurl -u domains)
+    do 
+      echo $sub | lolcat 
+      echo "Amass" | lolcat
+      amass enum -passive -noalts -d $sub | anew -q passive_recursive.txt 
+      echo "subfinder" | lolcat
+      subfinder -d $sub -all -silent | anew -q passive_recursive.txt
+  done
+
+elif [ $mode == "d" ]; then
+
+  for sub in $(cat passive_subdomains.txt | grep -v '*' | unfurl -u domains)
+    do 
+      echo $sub | lolcat 
+      echo "Amass" | lolcat
+      amass enum -passive -noalts -d $sub | anew -q passive_recursive.txt 
+      echo "subfinder" | lolcat
+      subfinder -d $sub -all -silent | anew -q passive_recursive.txt
+      echo "assetfinder" | lolcat
+      assetfinder --subs-only $sub | anew -q passive_recursive.txt
+      echo "findomain" | lolcat
+      findomain --quiet -t $sub | anew -q passive_recursive.txt
+  done
+fi
+
+cat passive_recursive.txt | anew passive_subdomains.txt 
+
+
+# probing passive subdomains
+cat passive_subdomains.txt |  httpx -random-agent -retries 2 -no-color -o probed_Default_ports.txt
+
+# resolve passive subdomains
+puredns resolve passive_subdomains.txt -w resolved_passive_subdomains.txt -r $resolvers -l 5000 --rate-limit-trusted 400 --wildcard-tests 30  --wildcard-batch 1500000
+
+
 #Active sub Enum
 sleep 1 
 echo -e "\n\n${RED}                                          starting Active SubEnum${NOCOLOR}\n\n"
-puredns resolve passive_subdomains.txt -w resolved_subdomains.txt -r $resolvers -l 5000 --rate-limit-trusted 400 --wildcard-tests 30  --wildcard-batch 1500000
 
 
 #tls enumeration 
 sleep 1 
 echo -e "\n\n${BLUE}                                                 starting tlsx${NOCOLOR}\n\n"
 if [ $mode == "f" ]; then
-  cat resolved_subdomains.txt | tlsx -san -cn -silent -ro -c 1000 | grep "\.$domain$\|^$domain$" | anew tslx_subdomains.txt
+  cat resolved_passive_subdomains.txt | tlsx -san -cn -silent -ro -c 1000 | grep "\.$domain$\|^$domain$" | anew tslx_subdomains.txt
 elif [ $mode == "d" ]; then
-  cat resolved_subdomains.txt | tlsx -san -cn -silent -ro -c 1000 -p $COMMON_PORTS | grep "\.$domain$\|^$domain$" | anew tslx_subdomains.txt
+  cat resolved_passive_subdomains.txt | tlsx -san -cn -silent -ro -c 1000 -p $COMMON_PORTS | grep "\.$domain$\|^$domain$" | anew tslx_subdomains.txt
 fi
 
 
@@ -156,63 +193,69 @@ if [[ $(echo "${RANDOM}thistestfornotexist${RANDOM}.$domain" | dnsx -r $resolver
         echo -e "\n\n${CYAN}                            starting Sub_NoError${NOCOLOR}\n\n"
         dnsx -d $domain -r $resolvers -silent -rcode noerror -w $dns_wordlist -o dnsx_subs.txt 
 else 
-			printf "\n${YELLOW} Detected DNSSEC black lies, skipping this technique ${NOCOLOR}\n" 
+      printf "\n${YELLOW} Detected DNSSEC black lies, skipping this technique ${NOCOLOR}\n" 
 fi
 
 
 
 #Brute Force
-sleep 1 
 echo -e "\n\n${RED}                                                starting BruteForce ${NOCOLOR}\n\n"
 echo -e "\n\n${RED}  be carful this step may case a lot of trafic on youe network so don't be worried let it finish and every thing will return to normal  ${NOCOLOR}\n\n"
+sleep 2
 puredns bruteforce $dns_wordlist $domain -w bruted_subs.txt -r $resolvers --resolvers-trusted $resolvers_trusted -l 5000 --rate-limit-trusted 400 --wildcard-tests 30  --wildcard-batch 1500000
+
+# probing 
+echo -e "\n\n${CYAN}                            starting Probing${NOCOLOR}\n\n"
+cat tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt 2>/dev/null | anew | httpx -random-agent -retries 2 -no-color | anew probed_Default_ports.txt
+
 
 #scraping subs
 if [ ! -z "$s" ]; then
-     cat resolved_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt | anew | httpx -random-agent -retries 2 -no-color -o probed_Default_ports.txt
+     
      sleep 1 
      echo -e "\n\n${BLUE}                            starting Scrapping${NOCOLOR}\n\n"
      gospider -S probed_Default_ports.txt --js -t 50 -d 3 --sitemap --robots -w -r | anew gospider.txt
      cat gospider.txt | grep -aEo 'https?://[^ ]+' | sed 's/]$//' | unfurl -u domains  | grep ".$domain$"  | anew scraped_subs.txt 
 
-
      #resolve scraped subdomains
       echo -e "\n\n${BLUE}                            resolving${NOCOLOR}\n\n"
-      puredns resolve scraped_subs.txt -w scrap_subs_resolved.txt -r $resolvers 
+      puredns resolve scraped_subs.txt -w scraped_subs_resolved.txt -r $resolvers -l 5000 --rate-limit-trusted 400 --wildcard-tests 30  --wildcard-batch 1500000
 
+     #probing
+      echo -e "\n\n${CYAN}                            starting scrapped subs Probing${NOCOLOR}\n\n"
+      cat scraped_subs_resolved.txt | httpx -random-agent -retries 2 -no-color | anew probed_scrapped_ports.txt #Alive subdomains
 fi
 
 
 
 if [ $mode == "f" ]; then
-  echo -e "\n\n${CYAN}                            starting Probing${NOCOLOR}\n\n"
-  cat scrap_subs_resolved.txt | httpx -random-agent -retries 2 -no-color | anew probed_Default_ports.txt #Alive subdomains
-  cat resolved_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt scrap_subs_resolved.txt | anew final_subdomains.txt
+  #subdomains final output
+  cat resolved_passive_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt scraped_subs_resolved.txt 2>/dev/null | anew final_subdomains.txt
+
 elif [ $mode == "d" ]; then
+
   #Permutation
-  cat passive_subdomains.txt resolved_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt scrap_subs_resolved.txt | anew Known_subdomains.txt
+  cat passive_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt scraped_subs.txt 2>/dev/null | anew Known_subdomains.txt
   sleep 1 
   echo -e "\n\n${YELLOW}                            starting Subdomains_Permutation${NOCOLOR}\n\n"
   sleep 1 
+
   #start tool
   echo -e "\n\n${RED}                               starting gotator${NOCOLOR}\n\n"
   gotator -sub Known_subdomains.txt -perm $Permutationwordlist -depth 1 -numbers 10 -mindup -adv -md -silent | anew gotator_subdomains.txt
+
   #resolving output
   puredns resolve gotator_subdomains.txt -w resolved_gotator_subdomains.txt -r $resolvers_trusted -l 5000 --rate-limit-trusted 400 --wildcard-tests 30  --wildcard-batch 1500000
-  cat resolved_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt scrap_subs_resolved.txt resolved_gotator_subdomains.txt | anew -q final_subdomains.txt
 
   #probing
   echo -e "\n\n${CYAN}                            starting Probing${NOCOLOR}\n\n"
   cat resolved_gotator_subdomains.txt | httpx -random-agent -retries 2 -no-color | anew probed_Default_ports.txt #Alive subdomains
-  rm gotator_subdomains.txt Known_subdomains.txt 
+
+  #subdomains final output
+  cat resolved_passive_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt scraped_subs_resolved.txt resolved_gotator_subdomains.txt 2>/dev/null | anew final_subdomains.txt
 fi
 
-#Probing on common ports
-echo -e "\n\n${CYAN}                            starting Probing on common ports${NOCOLOR}\n\n"
-sudo unimap --fast-scan -f final_subdomains.txt --ports $COMMON_PORTS -q --url-output > unimap_commonweb.txt
-cat unimap_commonweb.txt | httpx -random-agent -status-code -silent -retries 2 -no-color | cut -d ' ' -f1 | anew probed_common_ports.txt
-
-mv probed_Default_ports.txt probed_common_ports.txt final_subdomains.txt unimap_commonweb.txt gospider.txt ../ && cd ../
+mv probed_Default_ports.txt final_subdomains.txt unimap_commonweb.txt gospider.txt ../ && cd ../
 
 
 if [ ! -z "$r" ]; then
