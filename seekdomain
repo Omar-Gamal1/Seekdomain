@@ -149,15 +149,9 @@ fi
 
 #sub_noerror
 if [[ $(echo "${RANDOM}thistestfornotexist${RANDOM}.$domain" | dnsx -r $resolvers -rcode noerror,nxdomain -retry 3 -silent | cut -d' ' -f2) == "[NXDOMAIN]" ]]; then 
-      if [ $mode = "d" ]; then
         sleep 1 
         echo -e "\n\n${CYAN}                            starting Sub_NoError${NOCOLOR}\n\n"
         dnsx -d $domain -r $resolvers -silent -rcode noerror -w $dns_wordlist -o dnsx_subs.txt 
-      elif [ $mode == "f" ]; then
-        sleep 1 
-        echo -e "\n\n${CYAN}                            starting Sub_NoError${NOCOLOR}\n\n"
-        dnsx -d $domain -r $resolvers -silent -rcode noerror -w $dns_wordlist -o dnsx_subs.txt 
-      fi
 else 
 			printf "\n${YELLOW} Detected DNSSEC black lies, skipping this technique ${NOCOLOR}\n" 
 fi
@@ -170,14 +164,13 @@ echo -e "\n\n${RED}                                                starting Brut
 echo -e "\n\n${RED}  be carful this step may case a lot of trafic on youe network so don't be worried let it finish and every thing will return to normal  ${NOCOLOR}\n\n"
 puredns bruteforce $dns_wordlist $domain -w bruted_subs.txt -r $resolvers --resolvers-trusted $resolvers_trusted -l 5000 --rate-limit-trusted 400 --wildcard-tests 30  --wildcard-batch 1500000
 
-
-if [ ! -z "$s" ]; then
 #scraping subs
-cat resolved_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt | anew | httpx -random-agent -retries 2 -no-color -o probed_Default_ports.txt
-sleep 1 
-echo -e "\n\n${BLUE}                            starting Scrapping${NOCOLOR}\n\n"
-gospider -S probed_Default_ports.txt --js -t 50 -d 3 --sitemap --robots -w -r | anew gospider.txt
-cat gospider.txt | grep -aEo 'https?://[^ ]+' | sed 's/]$//' | unfurl -u domains  | grep ".$domain$"  | anew scraped_subs.txt 
+if [ ! -z "$s" ]; then
+     cat resolved_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt | anew | httpx -random-agent -retries 2 -no-color -o probed_Default_ports.txt
+     sleep 1 
+     echo -e "\n\n${BLUE}                            starting Scrapping${NOCOLOR}\n\n"
+     gospider -S probed_Default_ports.txt --js -t 50 -d 3 --sitemap --robots -w -r | anew gospider.txt
+     cat gospider.txt | grep -aEo 'https?://[^ ]+' | sed 's/]$//' | unfurl -u domains  | grep ".$domain$"  | anew scraped_subs.txt 
 fi
 
 #resolve scraped subdomains
