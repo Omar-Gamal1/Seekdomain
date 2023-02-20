@@ -31,6 +31,7 @@ domain=""
 mode=""
 r=""
 s=""
+p=""
 
 # Define usage function
 function usage {
@@ -38,8 +39,9 @@ function usage {
   echo "  -d    The domain name" | lolcat
   echo "  -m    The mode 
      'f : fast '  102k dns wordlist , without Permutation default ports in tslx
-     'd : deep '   2M  dns wordlist , with Permutation and search for more ports in tslx and more tools in passive recursion " | lolcat
+     'd : deep '   2M  dns wordlist ,search for more ports in tslx and more tools in passive recursion " | lolcat
   echo "  -s    Starts subdomain scrapping " | lolcat
+  echo "  -p    Enables Permutation        " | lolcat 
   echo "  -r    Remove the tools output, just get the final output " | lolcat
   echo "  -h    Display this help message"  | lolcat
   exit 1
@@ -77,6 +79,13 @@ while getopts "d:m:rh" opt; do
     r)
         r="true"
       ;;
+    p)
+        p="true"
+      ;;
+    s)
+        s="true"
+      ;;
+
     \?)
       usage
       ;;
@@ -226,13 +235,10 @@ if [ ! -z "$s" ]; then
       cat scraped_subs_resolved.txt | httpx -random-agent -retries 2 -no-color | anew probed_scrapped_ports.txt #Alive subdomains
 fi
 
+cat resolved_passive_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt scraped_subs_resolved.txt 2>/dev/null | anew final_subdomains.txt
 
 
-if [ $mode == "f" ]; then
-  #subdomains final output
-  cat resolved_passive_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt scraped_subs_resolved.txt 2>/dev/null | anew final_subdomains.txt
-
-elif [ $mode == "d" ]; then
+if [ ! -z "$p" ]; then
 
   #Permutation
   cat passive_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt scraped_subs.txt 2>/dev/null | anew Known_subdomains.txt
@@ -252,12 +258,12 @@ elif [ $mode == "d" ]; then
   cat resolved_gotator_subdomains.txt | httpx -random-agent -retries 2 -no-color | anew probed_Default_ports.txt #Alive subdomains
 
   #subdomains final output
-  cat resolved_passive_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt scraped_subs_resolved.txt resolved_gotator_subdomains.txt 2>/dev/null | anew final_subdomains.txt
+  cat resolved_gotator_subdomains.txt 2>/dev/null | anew final_subdomains.txt
 fi
 
-mv probed_Default_ports.txt final_subdomains.txt unimap_commonweb.txt gospider.txt ../ && cd ../
+mv probed_Default_ports.txt final_subdomains.txt gospider.txt ../ && cd ../
 
 
 if [ ! -z "$r" ]; then
-  sudo rm -rf tools_output
+  rm -rf tools_output
 fi
