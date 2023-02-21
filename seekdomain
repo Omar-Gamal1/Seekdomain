@@ -32,23 +32,25 @@ mode=""
 r=""
 s=""
 p=""
+w=""
 
 # Define usage function
 function usage {
   echo -e "\nUsage: $0 -d domain -m mode\n" |  lolcat
-  echo "  -d    The domain name" | lolcat
-  echo "  -m    The mode 
-     'f : fast '  102k dns wordlist , without Permutation default ports in tslx
-     'd : deep '   2M  dns wordlist ,search for more ports in tslx and more tools in passive recursion " | lolcat
+  echo "  -d    <domain>" | lolcat
+  echo "  -m    <mode> 
+     'F : fast '  102k dns wordlist , without Permutation default ports in tslx
+     'D : deep '   2M  dns wordlist ,search for more ports in tslx and more tools in passive recursion " | lolcat
   echo "  -s    Starts subdomain scrapping " | lolcat
-  echo "  -p    Enables Permutation        " | lolcat 
+  echo "  -p    <Permutation>  (if you want to use default wordlist [-p d] or pass your own -p <wordlist>)      " | lolcat 
   echo "  -r    Remove the tools output, just get the final output " | lolcat
+  echo "  -w    <dns_wordlist> (by default 102k for fastscan and all.txt 2M for deep) " | lolcat
   echo "  -h    Display this help message"  | lolcat
   exit 1
 }
 
 # Parse command line options
-while getopts "d:m:rsp:h" opt; do
+while getopts "d:m:dw:rs:p:w:h" opt; do
   case $opt in
     d)
       # Check if the argument is a valid domain name
@@ -60,17 +62,20 @@ while getopts "d:m:rsp:h" opt; do
       domain=$OPTARG
       ;;
     m)
-      if [ "$OPTARG" == "f" ]; then
+      if [ "$OPTARG" == "F" ]; then
         mode="f"
         dns_wordlist=/home/`whoami`/Tools/brute_subs_102k.txt
-      elif [ "$OPTARG" == "d" ]; then
+      elif [ "$OPTARG" == "D" ]; then
         mode="d"
         dns_wordlist=/home/`whoami`/Tools/brute_subs_2M_all.txt
       else
-        echo "Error: mode must be either 'f' or 'd' 
+        echo "Error: mode must be either 'F' or 'D' 
        -h for Help "
         exit 1
       fi
+      ;;
+    w)
+      dns_wordlist=$OPTARG
       ;;
     h)
       usage
@@ -79,7 +84,12 @@ while getopts "d:m:rsp:h" opt; do
         r="true"
       ;;
     p)
-        p=/home/`whoami`/Tools/permutations_list.txt
+      if [ "$OPTARG" == "d" ]; then
+          Permutationwordlist=/home/`whoami`/Tools/permutations_list.txt
+          echo "Permutation_wordlist set to default => $Permutationwordlist " 
+      else
+          Permutationwordlist="$OPTARG"
+      fi
       ;;
     s)
         s="true"
@@ -100,16 +110,12 @@ if [ -z "$domain" ] || [ -z "$mode" ]; then
 fi
 shift "$(($OPTIND -1))"
 
-
-
-
 resolvers=~/Tools/resolvers.txt
 resolvers_trusted=~/Tools/resolvers_trusted.txt
 COMMON_PORTS="21,22,25,80,110,135,143,261,271,324,443,448,465,563,614,631,636,664,684,695,832,853,854,990,993,989,992,994,995,1129,1131,1184,2083,2087,2089,2096,2221,2252,2376,2381,2478,2479,2482,2484,2679,2762,3077,3078,3183,3191,3220,3269,3306,3410,3424,3471,3496,3509,3529,3539,3535,3660,36611,3713,3747,3766,3864,3885,3995,3896,4031,4036,4062,4064,4081,4083,4116,4335,4336,4536,4590,4740,4843,4849,5443,5007,5061,5321,5349,5671,5783,5868,5986,5989,5990,6209,6251,6443,6513,6514,6619,6697,6771,7202,7443,7673,7674,7677,7775,8243,8443,8991,8989,9089,9295,9318,9443,9444,9614,9802,10161,10162,11751,12013,12109,14143,15002,16995,41230,16993,20003"
-Permutationwordlist="$p"
 
 
-mkdir -p "$domain/Subdomains/tools_output"
+# mkdir -p "$domain/Subdomains/tools_output"
 cd $domain/Subdomains/tools_output
 echo -e "\n\n                          ${ORANGE}`pwd`${NOCOLOR}       \n\n "
 
@@ -220,19 +226,20 @@ cat tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt 2>/dev/null | anew |
 
 #scraping subs
 if [ ! -z "$s" ]; then
-     
-     sleep 1 
-     echo -e "\n\n${BLUE}                            starting Scrapping${NOCOLOR}\n\n"
-     gospider -S probed_Default_ports.txt --js -t 50 -d 3 --sitemap --robots -w -r | anew gospider.txt
-     cat gospider.txt | grep -aEo 'https?://[^ ]+' | sed 's/]$//' | unfurl -u domains  | grep ".$domain$"  | anew scraped_subs.txt 
+    sleep 1 
+    echo -e "\n\n${BLUE}                            starting Scrapping${NOCOLOR}\n\n"
+    gospider -S probed_Default_ports.txt --js -t 50 -d 3 --sitemap --robots -w -r | anew gospider.txt
+    cat gospider.txt | grep -aEo 'https?://[^ ]+' | sed 's/]$//' | unfurl -u domains  | grep ".$domain$"  | anew scraped_subs.txt 
 
-     #resolve scraped subdomains
-      echo -e "\n\n${BLUE}                            resolving${NOCOLOR}\n\n"
-      puredns resolve scraped_subs.txt -w scraped_subs_resolved.txt -r $resolvers -l 5000 --rate-limit-trusted 400 --wildcard-tests 30  --wildcard-batch 1500000
+    #resolve scraped subdomains
+    echo -e "\n\n${BLUE}                            resolving${NOCOLOR}\n\n"
+    puredns resolve scraped_subs.txt -w scraped_subs_resolved.txt -r $resolvers -l 5000 --rate-limit-trusted 400 --wildcard-tests 30  --wildcard-batch 1500000
 
-     #probing
-      echo -e "\n\n${CYAN}                            starting scrapped subs Probing${NOCOLOR}\n\n"
-      cat scraped_subs_resolved.txt | httpx -random-agent -retries 2 -no-color | anew probed_scrapped_ports.txt #Alive subdomains
+    #probing
+    echo -e "\n\n${CYAN}                            starting scrapped subs Probing${NOCOLOR}\n\n"
+    cat scraped_subs_resolved.txt | httpx -random-agent -retries 2 -no-color | anew probed_scrapped_ports.txt #Alive subdomains
+else 
+  echo -e " ${RED}skipping scrapping${NOCOLOR} "
 fi
 
 cat resolved_passive_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt scraped_subs_resolved.txt 2>/dev/null | anew final_subdomains.txt
