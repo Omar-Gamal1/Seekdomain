@@ -46,9 +46,13 @@ seekdomain -d oppo.com -m f
 
 #### for enable subdomain scrapping 
 ```
-seekdomain -d oppo.com -m f -s 
+seekdomain -d oppo.com -m F -s 
 ```
-
+```
+seekdomain -d oppo.com -m D -p d -w <dns wordlist>
+```
+```-p``` is for enable permutation ```d``` is the default permutation wordlist you can set your own using ```-p <path to wordlist>``` \
+```-w``` to set your own dns wordlist 
 
 ### Output 
 ![image](https://user-images.githubusercontent.com/101532943/219975655-50944f29-de99-40bd-afee-704c448bcdea.png)
