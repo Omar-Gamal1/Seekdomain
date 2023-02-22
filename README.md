@@ -51,7 +51,8 @@ seekdomain -d oppo.com -m F -s
 ```
 seekdomain -d oppo.com -m <D> -p <d> -w <dns wordlist>
 ```
-```-p``` is for enable permutation ```d``` is the default permutation wordlist you can set your own using ```-p <path to wordlist>``` \
+```-p``` is for enable permutation ```d``` is the default permutation wordlist you can set your own using 
+```-p <path to wordlist>``` \
 ```-w``` to set your own dns wordlist 
 
 ### Output 
