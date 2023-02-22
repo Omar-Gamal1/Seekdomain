@@ -39,9 +39,9 @@ seekdomain -h
 
 ## Example
 ```
-seekdomain -d oppo.com -m f
+seekdomain -d oppo.com -m F
 ```
-```-m``` is the scan mode fast ```f``` or deep ```d``` 
+```-m``` is the scan mode fast ```F``` or deep ```D``` 
 > the diffrence is with the deep one will use permutation, bigger bruteforce list and test in the TLS for more ports
 
 #### for enable subdomain scrapping 
