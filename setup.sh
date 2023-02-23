@@ -45,7 +45,7 @@ cd ../
 curl -LO https://github.com/findomain/findomain/releases/latest/download/findomain-linux-i386.zip
 unzip findomain-linux-i386.zip
 chmod +x findomain
-sudo mv findomain /usr/bin/findomain
+sudo mv findomain /usr/bin/
 rm -rf findomain-linux-i386.zip
 findomain --help
 
@@ -53,6 +53,6 @@ wget -O brute_subs_2M_all.txt https://gist.githubusercontent.com/six2dez/a307a04
 
 
 #move to user binares
-chmod +x /usr/local/bin/seekdomain
+chmod +x seekdomain
 sudo mv seekdomain /usr/local/bin/
 
