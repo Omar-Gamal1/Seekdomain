@@ -150,34 +150,17 @@ cat crtsh_subdomains.txt subfinder_subdomains.txt amass_subdomains.txt asset_sub
 
 
 #recursive Enumeration
-if [ $mode == "f" ]; then
-
+if [ $mode == "d" ]; then
   for sub in $(cat passive_subdomains.txt | grep -v '*' | unfurl -u domains)
     do 
-      echo $sub | lolcat 
+      echo $sub 
       echo "Amass" | lolcat
       amass enum -passive -noalts -d $sub | anew -q passive_recursive.txt 
       echo "subfinder" | lolcat
-      subfinder -d $sub -all -silent | anew -q passive_recursive.txt
-  done
-
-elif [ $mode == "d" ]; then
-
-  for sub in $(cat passive_subdomains.txt | grep -v '*' | unfurl -u domains)
-    do 
-      echo $sub | lolcat 
-      echo "Amass" | lolcat
-      amass enum -passive -noalts -d $sub | anew -q passive_recursive.txt 
-      echo "subfinder" | lolcat
-      subfinder -d $sub -all -silent | anew -q passive_recursive.txt
-      echo "assetfinder" | lolcat
-      assetfinder --subs-only $sub | anew -q passive_recursive.txt
-      echo "findomain" | lolcat
-      findomain --quiet -t $sub | anew -q passive_recursive.txt
   done
 fi
 
-cat passive_recursive.txt | anew passive_subdomains.txt 
+cat passive_recursive.txt 2>/dev/null | anew passive_subdomains.txt 
 
 
 # probing passive subdomains
