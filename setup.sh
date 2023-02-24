@@ -18,6 +18,7 @@ go install github.com/projectdiscovery/tlsx/cmd/tlsx@latest
 go install github.com/tomnomnom/anew@latest
 go install github.com/tomnomnom/unfurl@latest
 GO111MODULE=on go install github.com/jaeles-project/gospider@latest
+go install github.com/projectdiscovery/katana/cmd/katana@latest
 
 #apt install
 sudo apt install lolcat
