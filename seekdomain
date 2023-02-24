@@ -86,9 +86,12 @@ while getopts "d:m:dw:rs:p:w:h" opt; do
     p)
       if [ "$OPTARG" == "d" ]; then
           Permutationwordlist=/home/`whoami`/Tools/permutations_list.txt
+          p="true"
           echo "Permutation_wordlist set to default => $Permutationwordlist " 
       else
+      	  p="true"
           Permutationwordlist="$OPTARG"
+          echo "$OPTARG"
       fi
       ;;
     s)
@@ -149,16 +152,16 @@ python3 /home/`whoami`/Tools/ctfr/ctfr.py -d $domain  -o crtsh_subdomains.txt
 cat crtsh_subdomains.txt subfinder_subdomains.txt amass_subdomains.txt asset_subdomains.txt findomain_subdomains.txt github_subdomains.txt | anew passive_subdomains.txt
 
 
-#recursive Enumeration
+#recursive Enumeration 
 echo "Amass" | lolcat
-amass enum -passive -noalts -df passive_subdomains.txt | anew passive_recursive.txt 
+amass enum -passive -noalts -df passive_subdomains.txt | anew -q passive_recursive.txt 
 
 
-cat passive_recursive.txt 2>/dev/null | anew passive_subdomains.txt 
+cat passive_recursive.txt | anew passive_subdomains.txt 
 
 
 # probing passive subdomains
-cat passive_subdomains.txt |  httpx -random-agent -retries 2 -no-color -o probed_Default_ports.txt
+cat passive_subdomains.txt |  httpx -random-agent -retries 2 -no-color -o alive_subdomains.txt
 
 # resolve passive subdomains
 puredns resolve passive_subdomains.txt -w resolved_passive_subdomains.txt -r $resolvers -l 5000 --rate-limit-trusted 400 --wildcard-tests 30  --wildcard-batch 1500000
@@ -194,14 +197,14 @@ puredns bruteforce $dns_wordlist $domain -w bruted_subs.txt -r $resolvers --reso
 
 # probing 
 echo -e "\n\n${CYAN}                            starting Probing${NOCOLOR}\n\n"
-cat tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt 2>/dev/null | anew | httpx -random-agent -retries 2 -no-color | anew probed_Default_ports.txt
+cat tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt 2>/dev/null | anew | httpx -random-agent -retries 2 -no-color | anew alive_subdomains.txt
 
 
 #scraping subs
 if [ ! -z "$s" ]; then
     sleep 1 
     echo -e "\n\n${BLUE}                            starting Scrapping${NOCOLOR}\n\n"
-    cat probed_Default_ports.txt | katana -jc -kf all -c 20 -d 3 -fs rdn | anew katana_output.txt
+    cat alive_subdomains.txt | katana -jc -kf all -c 20 -d 3 -fs rdn | anew katana_output.txt
     cat katana_output.txt | grep -aEo 'https?://[^ ]+' | sed 's/]$//' | unfurl -u domains  | grep ".$domain$"  | anew scraped_subs.txt 
 
     #resolve scraped subdomains
@@ -219,7 +222,7 @@ cat passive_subdomains.txt resolved_passive_subdomains.txt tslx_subdomains.txt d
 
 
 if [ ! -z "$p" ]; then
-
+echo "started"
   #Permutation
   cat passive_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt scraped_subs.txt 2>/dev/null | anew Known_subdomains.txt
   sleep 1 
@@ -235,7 +238,7 @@ if [ ! -z "$p" ]; then
 
   #probing
   echo -e "\n\n${CYAN}                            starting Probing${NOCOLOR}\n\n"
-  cat resolved_gotator_subdomains.txt | httpx -random-agent -retries 2 -no-color | anew probed_Default_ports.txt #Alive subdomains
+  cat resolved_gotator_subdomains.txt | httpx -random-agent -retries 2 -no-color | anew alive_subdomains.txt #Alive subdomains
 
   #subdomains final output
   cat resolved_gotator_subdomains.txt 2>/dev/null | anew final_subdomains.txt
@@ -246,4 +249,4 @@ if [ ! -z "$r" ]; then
 fi
 
 
-mv probed_Default_ports.txt final_subdomains.txt katana_output.txt ../ && cd ../
+mv alive_subdomains.txt final_subdomains.txt ../ && cd ../
