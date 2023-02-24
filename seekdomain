@@ -172,11 +172,7 @@ echo -e "\n\n${RED}                                          starting Active Sub
 #tls enumeration 
 sleep 1 
 echo -e "\n\n${BLUE}                                                 starting tlsx${NOCOLOR}\n\n"
-if [ $mode == "f" ]; then
-  cat resolved_passive_subdomains.txt | tlsx -san -cn -silent -ro -c 1000 | grep "\.$domain$\|^$domain$" | anew tslx_subdomains.txt
-elif [ $mode == "d" ]; then
-  cat resolved_passive_subdomains.txt | tlsx -san -cn -silent -ro -c 1000 -p $COMMON_PORTS | grep "\.$domain$\|^$domain$" | anew tslx_subdomains.txt
-fi
+cat resolved_passive_subdomains.txt | tlsx -san -cn -silent -ro -c 1000 | grep "\.$domain$\|^$domain$" | anew tslx_subdomains.txt
 
 
 #sub_noerror
