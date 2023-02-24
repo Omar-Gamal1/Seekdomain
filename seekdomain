@@ -150,15 +150,9 @@ cat crtsh_subdomains.txt subfinder_subdomains.txt amass_subdomains.txt asset_sub
 
 
 #recursive Enumeration
-if [ $mode == "d" ]; then
-  for sub in $(cat passive_subdomains.txt | grep -v '*' | unfurl -u domains)
-    do 
-      echo $sub 
-      echo "Amass" | lolcat
-      amass enum -passive -noalts -d $sub | anew -q passive_recursive.txt 
-      echo "subfinder" | lolcat
-  done
-fi
+echo "Amass" | lolcat
+amass enum -passive -noalts -df passive_subdomains.txt | anew passive_recursive.txt 
+
 
 cat passive_recursive.txt 2>/dev/null | anew passive_subdomains.txt 
 
@@ -211,8 +205,8 @@ cat tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt 2>/dev/null | anew |
 if [ ! -z "$s" ]; then
     sleep 1 
     echo -e "\n\n${BLUE}                            starting Scrapping${NOCOLOR}\n\n"
-    gospider -S probed_Default_ports.txt --js -t 50 -d 3 --sitemap --robots -w -r | anew gospider.txt
-    cat gospider.txt | grep -aEo 'https?://[^ ]+' | sed 's/]$//' | unfurl -u domains  | grep ".$domain$"  | anew scraped_subs.txt 
+    cat probed_Default_ports.txt | katana -jc -kf all -c 20 -d 3 -fs rdn | anew katana_output.txt
+    cat katana_output.txt | grep -aEo 'https?://[^ ]+' | sed 's/]$//' | unfurl -u domains  | grep ".$domain$"  | anew scraped_subs.txt 
 
     #resolve scraped subdomains
     echo -e "\n\n${BLUE}                            resolving${NOCOLOR}\n\n"
@@ -225,7 +219,7 @@ else
   echo -e " ${RED}skipping scrapping${NOCOLOR} "
 fi
 
-cat resolved_passive_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt scraped_subs_resolved.txt 2>/dev/null | anew final_subdomains.txt
+cat passive_subdomains.txt resolved_passive_subdomains.txt tslx_subdomains.txt dnsx_subdomains.txt bruted_subs.txt scraped_subs_resolved.txt 2>/dev/null | anew final_subdomains.txt
 
 
 if [ ! -z "$p" ]; then
@@ -251,9 +245,9 @@ if [ ! -z "$p" ]; then
   cat resolved_gotator_subdomains.txt 2>/dev/null | anew final_subdomains.txt
 fi
 
-mv probed_Default_ports.txt final_subdomains.txt gospider.txt ../ && cd ../
-
-
 if [ ! -z "$r" ]; then
   rm -rf tools_output
 fi
+
+
+mv probed_Default_ports.txt final_subdomains.txt katana_output.txt ../ && cd ../
