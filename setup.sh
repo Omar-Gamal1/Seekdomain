@@ -1,5 +1,13 @@
 #!/bin/bash
 
+
+#move to user binares
+chmod +x seekdomain
+sudo mv seekdomain /usr/local/bin/
+
+
+
+
 mkdir /home/`whoami`/Tools
 mv permutations_list.txt /home/`whoami`/Tools
 mv brute_subs_102k.txt /home/`whoami`/Tools
@@ -51,9 +59,4 @@ rm -rf findomain-linux-i386.zip
 findomain --help
 
 wget -O brute_subs_2M_all.txt https://gist.githubusercontent.com/six2dez/a307a04a222fab5a57466c51e1569acf/raw 
-
-
-#move to user binares
-chmod +x seekdomain
-sudo mv seekdomain /usr/local/bin/
 
